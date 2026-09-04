@@ -87,6 +87,7 @@ GET  /timesfm/api/v1/watch                   # 列出已注册目标 + 最新预
 - [x] dsh 插件骨架 v0.1（package.json + cordis.patch.yml + LICENSE + lib/index.js：Python 子进程守护 + cordis service + HTTP 代理）
 - [x] 插件接入 profile 实测（官方命令装本地路径；修两处 boot 错误：cordis ctx 禁任意属性赋值→模块级 inject 声明、dsh.client 声明需配 ./client 入口→v0.1 先删字段；全链路 3080→:8920→模型 实测通）
 - [ ] watch 监控/告警闭环（JS 侧定时拉数）
-- [ ] 真实场景接入验证（qa-platform / RAG 监控目标）
+- [x] 真实场景验证首轮（collector 采集 4 服务 × 42 真实观测：qa-platform/RAG/seekdb/timesfm 响应耗时；预测趋势合理、正常值全部不出带、注入 spike 全部准确告警——判定链路在真实数据上通过）
+- [ ] 持续 watch 循环（JS 侧定时拉数 + 告警事件广播）
 - [ ] 工程件：测试套件 / typecheck / 双语 README / CI
 - [ ] npm 发版 + 市场收录（远期，达标上述门槛后）
