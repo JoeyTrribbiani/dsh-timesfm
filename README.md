@@ -85,7 +85,7 @@ GET  /timesfm/api/v1/watch                   # 列出已注册目标 + 最新预
 - [x] Python 预测核心（TimesFMCore：forecast/anomaly_score，smoke 全绿）
 - [x] Python 服务壳（FastAPI :8920：/health /api/v1/forecast /api/v1/anomaly /api/v1/watch/check）
 - [x] dsh 插件骨架 v0.1（package.json + cordis.patch.yml + LICENSE + lib/index.js：Python 子进程守护 + cordis service + HTTP 代理）
-- [ ] 插件接入 profile 实测（dsh plugin add 本地路径 + boot 验证）
+- [x] 插件接入 profile 实测（官方命令装本地路径；修两处 boot 错误：cordis ctx 禁任意属性赋值→模块级 inject 声明、dsh.client 声明需配 ./client 入口→v0.1 先删字段；全链路 3080→:8920→模型 实测通）
 - [ ] watch 监控/告警闭环（JS 侧定时拉数）
 - [ ] 真实场景接入验证（qa-platform / RAG 监控目标）
 - [ ] 工程件：测试套件 / typecheck / 双语 README / CI
