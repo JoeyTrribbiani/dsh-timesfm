@@ -77,6 +77,17 @@ GET  /timesfm/api/v1/watch                   # 列出已注册目标 + 最新预
 4. 双语 README + LICENSE + CI
 5. 与 dshmarket/better-sidebar 同级工程完整度
 
+## TimesFM 能力利用盘点（2026-09-04）
+
+已发挥：零样本单序列预测、10 槽分位带、异常判分（anomaly_score）、flip invariance、连续 quantile head、normalize_inputs、infer_is_positive、fix_quantile_crossing。
+
+未发挥（下次做）：
+- [ ] **批量预测**——模型层 `forecast(inputs=[...])` 本身收数组，TimesFMCore 只暴露单序列；补批量接口（一次几百条序列高效预测，watch 多目标场景直接受益）
+- [ ] **XReg 协变量预测**——`timesfm[xreg]` 可选依赖（sklearn/JAX）未装；动态/静态外部变量（节假日、发版日、流量峰）提升预测精度
+- [ ] **超长上下文**——2.5 支持到 16384，当前 max_context 只配 1024；长历史序列（如全年监控数据）可放开
+- [ ] **backcast 反向预测**——ForecastConfig.return_backcast 未暴露；可用于拟合质量自检（预测过去对比真实过去）
+- [ ] window_size 分解预测——上游 TODO 未实现，持续关注
+
 ## 状态
 
 - [x] 可行性研究（TimesFM 能力/资源/用法）
