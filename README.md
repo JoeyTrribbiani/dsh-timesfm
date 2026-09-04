@@ -86,8 +86,8 @@ GET  /timesfm/api/v1/watch                   # 列出已注册目标 + 最新预
 - [ ] **超长上下文**——2.5 支持到 16384，当前 max_context 只配 1024；长历史序列（如全年监控数据）可放开
 - [ ] **backcast 反向预测**——ForecastConfig.return_backcast 未暴露；可用于拟合质量自检（预测过去对比真实过去）
 - [ ] window_size 分解预测——上游 TODO 未实现，持续关注
-- [ ] cordis service 注册姿势待挖——官方 API（provide/service 定义）没有实证，找到后补进程内 service 层
-- [ ] agent tool 注册（defineTool）——让 dsh agent 会话内直接调预测
+- [x] cordis service 层（ctx.provide('timesfm') + export provide 声明，官方 API 实证：cordis lib 799 行）
+- [x] agent tool（timesfm_forecast，defineTool + ctx.tools.register，inject 需含 'tools'）
 
 ## 状态
 
@@ -96,7 +96,7 @@ GET  /timesfm/api/v1/watch                   # 列出已注册目标 + 最新预
 - [x] 公共插件定位 + 三层标准接入设计
 - [x] Python 预测核心（TimesFMCore：forecast/anomaly_score，smoke 全绿）
 - [x] Python 服务壳（FastAPI :8920：/health /api/v1/forecast /api/v1/anomaly /api/v1/watch/check）
-- [x] dsh 插件骨架 v0.1（package.json + cordis.patch.yml + LICENSE + lib/index.js：Python 子进程守护 + cordis service + HTTP 代理）
+- [x] dsh 插件骨架 v0.2（package.json + cordis.patch.yml + LICENSE + lib/index.js：Python 子进程守护 + ctx.provide cordis service + HTTP 代理 + agent tool）
 - [x] 插件接入 profile 实测（官方命令装本地路径；修两处 boot 错误：cordis ctx 禁任意属性赋值→模块级 inject 声明、dsh.client 声明需配 ./client 入口→v0.1 先删字段；全链路 3080→:8920→模型 实测通）
 - [ ] watch 监控/告警闭环（JS 侧定时拉数）
 - [x] 真实场景验证首轮（collector 采集 4 服务 × 42 真实观测：qa-platform/RAG/seekdb/timesfm 响应耗时；预测趋势合理、正常值全部不出带、注入 spike 全部准确告警——判定链路在真实数据上通过）
