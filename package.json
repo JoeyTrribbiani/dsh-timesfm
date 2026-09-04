@@ -1,0 +1,43 @@
+{
+  "name": "dsh-timesfm",
+  "version": "0.1.0",
+  "description": "Zero-shot time-series forecasting for dsh — anomaly detection & trend prediction (Google TimesFM 2.5, 100% local inference)",
+  "type": "module",
+  "main": "lib/index.js",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JoeyTrribbiani/dsh-timesfm.git"
+  },
+  "keywords": [
+    "deepseek",
+    "harness",
+    "dsh",
+    "dsh-plugin",
+    "forecasting",
+    "timesfm",
+    "anomaly-detection",
+    "time-series"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "python3 scripts/smoke_test.py",
+    "serve": "python3 -m core.server"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "^4.0.2",
+    "@deepseek-ai/dsh-settings": "^0.1.2-rc.1",
+    "@deepseek-ai/schemastery": "^3.18.1"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "inject": [],
+      "platform": "web"
+    }
+  }
+}

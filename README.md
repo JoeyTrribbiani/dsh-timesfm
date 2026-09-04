@@ -69,12 +69,24 @@ GET  /timesfm/api/v1/watch                   # 列出已注册目标 + 最新预
 - 设置用 schemastery schema + settings namespace（`dsh-timesfm`）
 - npm 公开发版 → dshmarket 市场收录（awesome-dsh-plugin.com）
 
+## 质量达标标准（市场收录门槛，自设）
+
+1. 插件在真实 dsh profile 稳定加载运行 ≥ 1 周
+2. ≥ 2 个真实项目接入（如 qa-platform 监控 + RAG 服务监控）且告警准确
+3. 测试套件（非合成数据 smoke）+ typecheck 通过
+4. 双语 README + LICENSE + CI
+5. 与 dshmarket/better-sidebar 同级工程完整度
+
 ## 状态
 
 - [x] 可行性研究（TimesFM 能力/资源/用法）
-- [x] 官方插件标准逆向（dshmarket + dsh-better-sidebar 解包实证）
+- [x] 官方插件标准逆向（dshmarket + dsh-better-sidebar 解包实证，知识已入 RAG 库）
 - [x] 公共插件定位 + 三层标准接入设计
-- [ ] Python 预测核心（timesfm 封装 + seekdb 读数适配器）
-- [ ] dsh 插件骨架（package.json + cordis.patch.yml + forecast service + HTTP 路由 + agent tool）
-- [ ] watch 监控/告警闭环
-- [ ] npm 发版 + 市场收录
+- [x] Python 预测核心（TimesFMCore：forecast/anomaly_score，smoke 全绿）
+- [x] Python 服务壳（FastAPI :8920：/health /api/v1/forecast /api/v1/anomaly /api/v1/watch/check）
+- [x] dsh 插件骨架 v0.1（package.json + cordis.patch.yml + LICENSE + lib/index.js：Python 子进程守护 + cordis service + HTTP 代理）
+- [ ] 插件接入 profile 实测（dsh plugin add 本地路径 + boot 验证）
+- [ ] watch 监控/告警闭环（JS 侧定时拉数）
+- [ ] 真实场景接入验证（qa-platform / RAG 监控目标）
+- [ ] 工程件：测试套件 / typecheck / 双语 README / CI
+- [ ] npm 发版 + 市场收录（远期，达标上述门槛后）
