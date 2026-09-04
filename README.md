@@ -62,7 +62,7 @@ GET  /timesfm/api/v1/watch                   # 列出已注册目标 + 最新预
 
 ## 接入标准实现依据
 
-按官方插件规范（实证笔记：`~/Workspace/harness/projects/dsh-plugin-standards.md`）：
+按官方插件规范（实证知识已入 RAG 知识库 127.0.0.1:8900，检索 "dsh 插件接入标准"，domain=dsh）：
 
 - 宿主包 `peerDependencies`（`@deepseek-ai/cordis` / `dsh-settings` / `schemastery`），不打包
 - `dsh.bundle.patch` → `cordis.patch.yml`；`dsh.client.inject` 声明 web 侧注入
