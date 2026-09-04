@@ -34,6 +34,13 @@ def main() -> int:
     assert a["quantile_pos"] == "above_0.9", f"异常判分意外: {a}"
     print(f"[ok] anomaly_score: {a['quantile_pos']} band={np.round(a['band'], 3).tolist()}")
 
+    # 批量预测：两条同长度序列一次调用
+    s2 = (np.sin(t * 1.5) * 2 + 5 + rng.normal(0, 0.1, t.size)).astype(np.float32)
+    batch = core.forecast_batch([series.tolist(), s2.tolist()], horizon=12, quantiles=(0.1, 0.9))
+    assert len(batch) == 2, f"批量返回数错误: {len(batch)}"
+    assert all(len(b["point"]) == 12 for b in batch), "批量 point 长度错误"
+    print(f"[ok] forecast_batch: 2 序列 × 12 步，序列 2 首 3 步 {[round(x, 2) for x in batch[1]['point'][:3]]}")
+
     print("SMOKE PASS")
     return 0
 

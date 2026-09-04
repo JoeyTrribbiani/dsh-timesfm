@@ -25,6 +25,12 @@ class ForecastRequest(BaseModel):
     quantiles: List[float] = Field(default_factory=lambda: [0.1, 0.5, 0.9])
 
 
+class BatchForecastRequest(BaseModel):
+    series: List[List[float]] = Field(..., description="多条同长度一维时序")
+    horizon: int = Field(24, ge=1, le=256)
+    quantiles: List[float] = Field(default_factory=lambda: [0.1, 0.5, 0.9])
+
+
 class AnomalyRequest(BaseModel):
     series: List[float]
     actual: float
@@ -53,6 +59,20 @@ def forecast(req: ForecastRequest):
     except ForecastError as e:
         raise HTTPException(status_code=422, detail=str(e))
     except Exception as e:  # 模型加载失败等
+        with _state_lock:
+            _state["error"] = str(e)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/api/v1/forecast/batch")
+def forecast_batch(req: BatchForecastRequest):
+    """批量预测：一次模型调用预测多条同长度序列。返回 {results: [...], count: n}"""
+    try:
+        results = get_core().forecast_batch(req.series, horizon=req.horizon, quantiles=req.quantiles)
+        return {"results": results, "count": len(results)}
+    except ForecastError as e:
+        raise HTTPException(status_code=422, detail=str(e))
+    except Exception as e:
         with _state_lock:
             _state["error"] = str(e)
         raise HTTPException(status_code=500, detail=str(e))

@@ -130,6 +130,58 @@ class TimesFMCore:
             "n_obs": int(arr.size),
         }
 
+    def forecast_batch(
+        self,
+        series_list: Sequence[Sequence[float]],
+        horizon: int = 24,
+        quantiles: Sequence[float] = (0.1, 0.5, 0.9),
+    ) -> list:
+        """批量预测：一次模型调用预测多条序列（v1 要求同长度，超长截尾同单序列）。"""
+        if not series_list or not isinstance(series_list, (list, tuple)):
+            raise ForecastError("series_list 必须为非空数组")
+        arrs = []
+        for s in series_list:
+            a = self._validate(s, int(horizon))
+            if a.size > self.max_context:
+                a = a[-self.max_context:]
+            arrs.append(a)
+        lens = {a.size for a in arrs}
+        if len(lens) != 1:
+            raise ForecastError(
+                f"批量 v1 要求序列同长度，收到 {sorted(lens)}；异长请分开调用"
+            )
+        requested = sorted({float(q) for q in quantiles})
+        for q in requested:
+            if q not in QUANTILE_LADDER:
+                raise ForecastError(f"分位 {q} 不在支持档位 {QUANTILE_LADDER}")
+
+        self._ensure_loaded()
+        point, quant = self._model.forecast(horizon=int(horizon), inputs=arrs)
+        point = np.asarray(point)   # (b, horizon)
+        quant = np.asarray(quant)   # (b, horizon, 10)
+
+        # 同单序列版：去 slot 0（raw slot），1..9 对应 [0.1..0.9]
+        ladder = list(QUANTILE_LADDER)
+        if quant.shape[-1] == len(ladder) + 1:
+            quant = quant[:, :, 1:]
+
+        results = []
+        for i in range(point.shape[0]):
+            if quant.shape[-1] != len(ladder):
+                bands = {"0.5": point[i].tolist()}
+            else:
+                bands = {
+                    f"{q:g}": quant[i][:, ladder.index(q)].tolist()
+                    for q in requested
+                }
+            results.append({
+                "point": point[i].tolist(),
+                "quantiles": bands,
+                "model": self.model_id,
+                "n_obs": int(arrs[i].size),
+            })
+        return results
+
     def anomaly_score(self, series: Sequence[float], actual: float) -> dict:
         """异常判分：actual 落在预测分布外的程度。
 
