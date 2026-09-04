@@ -108,11 +108,15 @@ class TimesFMCore:
 
         point, quant = self._model.forecast(horizon=int(horizon), inputs=[arr])
         point = np.asarray(point)[0]          # (horizon,)
-        quant = np.asarray(quant)[0]          # (horizon, n_quantiles)
+        quant = np.asarray(quant)[0]          # (horizon, 10)
 
+        # timesfm 3.0.1 / TimesFM 2.5 输出 10 slot：slot 5=中位数（decode_index），
+        # slot 0 为 raw slot（不参与 crossing 修复），slot 1..9 对应 [0.1..0.9]
         ladder = list(QUANTILE_LADDER)
+        if quant.shape[-1] == len(ladder) + 1:
+            quant = quant[:, 1:]              # 去掉 slot 0
         if quant.shape[-1] != len(ladder):
-            # 模型分位档与预期不符时，退化只给中位点预测
+            # 分位档与预期不符时，退化只给中位点预测
             bands = {"0.5": point.tolist()}
         else:
             bands = {
