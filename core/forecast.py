@@ -20,17 +20,24 @@ class ForecastError(ValueError):
 
 
 class TimesFMCore:
-    """单例懒加载的 TimesFM 推理核。MPS 优先，CPU 兜底。"""
+    """单例懒加载的 TimesFM 推理核。MPS 优先，CPU 兜底。
+
+    max_context 支持到 16384（TimesFM 2.5 上限）；服务监控场景默认 1024 即够，
+    长历史序列（全年监控）可构造时放大——注意内存随上下文增长。
+    return_backcast=True 时 forecast 结果额外带 backcast 段（拟合自检：预测过去对比真实过去）。
+    """
 
     def __init__(
         self,
         model_id: str = DEFAULT_MODEL_ID,
         max_context: int = DEFAULT_MAX_CONTEXT,
         max_horizon: int = DEFAULT_MAX_HORIZON,
+        return_backcast: bool = False,
     ):
         self.model_id = model_id
         self.max_context = max_context
         self.max_horizon = max_horizon
+        self.return_backcast = return_backcast
         self._model = None
         self._lock = threading.Lock()
 
@@ -57,6 +64,7 @@ class TimesFMCore:
                     force_flip_invariance=True,
                     infer_is_positive=True,
                     fix_quantile_crossing=True,
+                    return_backcast=self.return_backcast,
                 )
             )
             self._model = model
@@ -107,12 +115,22 @@ class TimesFMCore:
             arr = arr[-self.max_context:]
 
         point, quant = self._model.forecast(horizon=int(horizon), inputs=[arr])
-        point = np.asarray(point)[0]          # (horizon,)
-        quant = np.asarray(quant)[0]          # (horizon, 10)
+        point = np.asarray(point)[0]          # (time_total,)
+        quant = np.asarray(quant)[0]          # (time_total, 10)
+
+        fc_len = int(horizon)
+        ladder = list(QUANTILE_LADDER)
+
+        # backcast 段 = 预测轴去掉 horizon 的前段，尾部与输入尾部对齐（拟合自检：预测过去 vs 真实过去）
+        backcast = None
+        if self.return_backcast and point.size > fc_len:
+            backcast = point[:-fc_len][-arr.size:].tolist()
+
+        point = point[-fc_len:]
+        quant = quant[-fc_len:, :]
 
         # timesfm 3.0.1 / TimesFM 2.5 输出 10 slot：slot 5=中位数（decode_index），
         # slot 0 为 raw slot（不参与 crossing 修复），slot 1..9 对应 [0.1..0.9]
-        ladder = list(QUANTILE_LADDER)
         if quant.shape[-1] == len(ladder) + 1:
             quant = quant[:, 1:]              # 去掉 slot 0
         if quant.shape[-1] != len(ladder):
@@ -123,12 +141,15 @@ class TimesFMCore:
                 f"{q:g}": quant[:, ladder.index(q)].tolist() for q in requested
             }
 
-        return {
+        result = {
             "point": point.tolist(),
             "quantiles": bands,
             "model": self.model_id,
             "n_obs": int(arr.size),
         }
+        if backcast is not None:
+            result["backcast"] = backcast
+        return result
 
     def forecast_batch(
         self,

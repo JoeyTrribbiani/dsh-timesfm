@@ -204,3 +204,9 @@
 {"ts": 1788668850.198246, "name": "qa-platform", "forecast_next": 2.5943875312805176, "band": [1.3720840215682983, 4.041498184204102], "latest": 5.8, "alert": true}
 {"ts": 1788668850.198283, "name": "rag", "forecast_next": 58.29435348510742, "band": [44.77732849121094, 71.88166809082031], "latest": 81.16, "alert": true}
 {"ts": 1788668850.1982982, "name": "timesfm", "forecast_next": 2.413698434829712, "band": [1.4986623525619507, 3.4694037437438965], "latest": 4.34, "alert": true}
+{"ts": 1788670235.707894, "name": "qa-platform", "forecast_next": 3.095562696456909, "band": [1.4011986255645752, 5.443181991577148], "latest": 9.67, "direction": "slowdown", "position": "above_band", "alert": true}
+{"ts": 1788670536.714369, "name": "timesfm", "forecast_next": 2.17919659614563, "band": [1.3798115253448486, 3.1878342628479004], "latest": 3.64, "direction": "slowdown", "position": "above_band", "alert": true}
+{"ts": 1788672341.9843872, "name": "rag", "forecast_next": 51.66029739379883, "band": [37.59804916381836, 66.05532836914062], "latest": 68.35, "direction": "slowdown", "position": "above_band", "alert": true}
+{"ts": 1788672341.984444, "name": "timesfm", "forecast_next": 2.834991216659546, "band": [1.5931884050369263, 4.577555179595947], "latest": 7.44, "direction": "slowdown", "position": "above_band", "alert": true}
+{"ts": 1788672642.927349, "name": "qa-platform", "forecast_next": 2.773528814315796, "band": [1.3942948579788208, 4.755980968475342], "latest": 6.01, "direction": "slowdown", "position": "above_band", "alert": true}
+{"ts": 1788672642.927372, "name": "timesfm", "forecast_next": 3.867438316345215, "band": [2.161341667175293, 6.344432353973389], "latest": 7.13, "direction": "slowdown", "position": "above_band", "alert": true}
