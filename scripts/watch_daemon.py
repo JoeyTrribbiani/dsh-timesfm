@@ -46,7 +46,7 @@ def load_recent(name: str, n: int = WINDOW) -> list[float]:
 def watch_check(name: str, series: list[float]) -> dict:
     req = urllib.request.Request(
         f"{RAG_BASE}/api/v1/watch/check",
-        data=json.dumps({"name": name, "series": series, "horizon": 6, "band": [0.1, 0.9]}).encode(),
+        data=json.dumps({"name": name, "series": series, "horizon": 6, "band": [0.1, 0.9], "direction": "slowdown"}).encode(),
         headers={"Content-Type": "application/json"},
     )
     with urllib.request.urlopen(req, timeout=90) as resp:

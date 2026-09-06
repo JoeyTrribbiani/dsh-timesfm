@@ -43,6 +43,7 @@ class WatchRequest(BaseModel):
     series: List[float]
     horizon: int = 6
     band: List[float] = Field(default_factory=lambda: [0.1, 0.9])
+    direction: str = Field("slowdown", description="告警方向：slowdown=只告变慢（默认，监控场景）/ both=双向出带")
 
 
 @app.get("/health")
@@ -96,12 +97,20 @@ def watch_check(req: WatchRequest):
         lo = out["quantiles"][lo_k][0]
         hi = out["quantiles"][hi_k][0]
         latest = req.series[-1]
+        if req.direction == "slowdown":
+            alert = latest > hi
+            pos = "above_band" if alert else "in_band"
+        else:
+            alert = latest < lo or latest > hi
+            pos = "below_band" if latest < lo else ("above_band" if latest > hi else "in_band")
         return {
             "name": req.name,
             "forecast_next": out["point"][0],
             "band": [lo, hi],
             "latest": latest,
-            "alert": latest < lo or latest > hi,
+            "direction": req.direction,
+            "position": pos,
+            "alert": alert,
         }
     except ForecastError as e:
         raise HTTPException(status_code=422, detail=str(e))
