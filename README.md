@@ -3,6 +3,11 @@
 > 公共 dsh 插件：给整个 dsh 生态提供零样本时序预测能力（Google TimesFM，本地推理）。
 > 后面任何项目都能用，标准接入，不绑定 qa-platform。
 
+[![node](https://img.shields.io/badge/node-%3E%3D20-green.svg)](https://nodejs.org/)
+[![python](https://img.shields.io/badge/python-%3E%3D3.10-blue.svg)](https://www.python.org/)
+[![model](https://img.shields.io/badge/model-TimesFM%202.5--200m-orange.svg)](https://huggingface.co/google/timesfm-2.5-200m-pytorch)
+[![dsh](https://img.shields.io/badge/dsh-ecosystem-blueviolet.svg)](#标准接入三层)
+
 ## 定位
 
 像 dsh-better-sidebar 一样的基础设施型公共插件：装一次，所有 dsh profile 可用；
